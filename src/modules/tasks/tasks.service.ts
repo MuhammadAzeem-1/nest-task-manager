@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Task } from './task.interface';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -26,10 +28,17 @@ export class TasksService {
     return this.tasks.find((task) => task.id === id);
   }
 
-  createTask(task: Task): boolean {
-    console.log('task', task);
-
+  createTask(task: CreateTaskDto): boolean {
     this.tasks.push(task);
+    return true;
+  }
+
+  updateTask(id: string, updatedTask: UpdateTaskDto): boolean {
+    const taskIndex = this.tasks.findIndex((task) => task.id === id);
+    if (taskIndex === -1) {
+      return false; // Task not found
+    }
+    this.tasks[taskIndex] = { ...this.tasks[taskIndex], ...updatedTask };
     return true;
   }
 }
