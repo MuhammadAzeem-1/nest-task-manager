@@ -8,22 +8,22 @@ import {
   Put,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task } from './task.interface';
 import { CreateTaskDto, RetrunCreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { Task as PrismaTask } from '@prisma/client';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get('/')
-  getAllTasks(): Task[] {
+  async getAllTasks(): Promise<PrismaTask[]> {
     return this.tasksService.getAllTasks();
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Task | undefined {
-    const task = this.tasksService.getTaskById(id);
+  async getTaskById(@Param('id') id: string): Promise<PrismaTask | undefined> {
+    const task = await this.tasksService.getTaskById(id);
 
     if (!task) {
       throw new HttpException(
@@ -42,8 +42,10 @@ export class TasksController {
   @Post('/create')
   // use Body() decorator to extract the body of the request and validate it
   // use CreateTaskDto to validate the request body - Currently just Testing
-  createTask(@Body() CreateTaskDto: CreateTaskDto): RetrunCreateTaskDto {
-    const success = this.tasksService.createTask(CreateTaskDto);
+  async createTask(
+    @Body() CreateTaskDto: CreateTaskDto,
+  ): Promise<RetrunCreateTaskDto> {
+    const success = await this.tasksService.createTask(CreateTaskDto);
     if (!success) {
       throw new HttpException(
         {
@@ -53,18 +55,22 @@ export class TasksController {
         500,
       );
     }
-    return { title: CreateTaskDto.title, status: CreateTaskDto.status };
+    return {
+      success: success,
+      title: CreateTaskDto.title,
+      status: CreateTaskDto.status,
+    };
   }
 
   @Put('/update/:id')
-  updateTasks(
+  async updateTasks(
     @Param('id') id: string,
     @Body() UpdateTaskDto: UpdateTaskDto,
-  ): Partial<UpdateTaskDto> {
+  ): Promise<Partial<UpdateTaskDto>> {
     // Implement the update logic here
     // You can use the @Param() decorator to get the task ID from the URL
     // and the @Body() decorator to get the updated task data from the request body
-    const success = this.tasksService.updateTask(id, UpdateTaskDto);
+    const success = await this.tasksService.updateTask(id, UpdateTaskDto);
     if (!success) {
       throw new HttpException(
         {
@@ -75,6 +81,7 @@ export class TasksController {
       );
     }
     return {
+      success: success,
       title: UpdateTaskDto.title,
       status: UpdateTaskDto.status,
     };

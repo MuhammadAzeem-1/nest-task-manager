@@ -1,9 +1,8 @@
 import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateTaskDto {
+  success: boolean;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  @IsString()
-  id: string;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @IsString()
   title: string;

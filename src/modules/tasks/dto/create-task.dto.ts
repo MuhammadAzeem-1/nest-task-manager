@@ -3,9 +3,6 @@ import { IsOptional, IsString } from 'class-validator';
 export class CreateTaskDto {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @IsString()
-  id: string;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  @IsString()
   title: string;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @IsString()
@@ -19,6 +16,7 @@ export class CreateTaskDto {
 }
 
 export class RetrunCreateTaskDto {
+  success: boolean;
   title: string;
   status: 'DONE' | 'IN_PROGRESS' | 'OPEN';
   // Add other properties as needed
