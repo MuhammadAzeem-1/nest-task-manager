@@ -126,6 +126,17 @@ exports.Prisma.TaskScalarFieldEnum = {
   description: 'description',
   status: 'status',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+};
+
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  role: 'role',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
@@ -139,9 +150,25 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.TaskStatus = exports.$Enums.TaskStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.UserRole = exports.$Enums.UserRole = {
+  ADMIN: 'ADMIN',
+  USER: 'USER',
+  MODERATOR: 'MODERATOR'
+};
 
 exports.Prisma.ModelName = {
-  Task: 'Task'
+  Task: 'Task',
+  User: 'User'
 };
 
 /**

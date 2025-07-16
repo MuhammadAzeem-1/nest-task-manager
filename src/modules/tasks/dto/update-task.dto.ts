@@ -13,11 +13,11 @@ export class UpdateTaskDto {
   description: string;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @IsString()
-  status: 'DONE' | 'IN_PROGRESS' | 'OPEN';
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'CANCELLED';
   // Add other properties as needed
 }
 
 export class RetrunUpdateTaskDto {
   title: string;
-  status: 'DONE' | 'IN_PROGRESS' | 'OPEN';
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'CANCELLED';
 }

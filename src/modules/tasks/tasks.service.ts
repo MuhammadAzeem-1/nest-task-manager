@@ -1,67 +1,140 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTaskDto } from './dto/create-task.dto';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
+import { CreateTaskDto, PublicTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '../prisma/prisma.service';
-//import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { Task as PrismaTask } from '@prisma/client';
+import { ApiResponse } from 'src/config/types';
 
 @Injectable()
 export class TasksService {
-  // Inject PrismaService to interact with the database
-  //constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(TasksService.name);
+
   constructor(private prisma: PrismaService) {}
 
-  async getAllTasks(): Promise<PrismaTask[]> {
-    try {
-      const tasks = await this.prisma.task.findMany();
-
-      if (tasks.length === 0) {
-        throw new NotFoundException('No tasks found.');
-      }
-      return tasks;
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-      return [];
-    }
-  }
-
-  async getTaskById(id: string): Promise<PrismaTask | null> {
-    return await this.prisma.task.findUnique({
-      where: { id },
+  async getAllTasks(): Promise<ApiResponse<PublicTaskDto[]>> {
+    const tasks = await this.prisma.task.findMany({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
+    return {
+      success: tasks.length > 0,
+      data: tasks,
+      error: tasks.length === 0 ? 'No tasks found' : null,
+    };
   }
 
-  async createTask(task: CreateTaskDto): Promise<boolean> {
+  async getTaskById(id: string): Promise<ApiResponse<PublicTaskDto>> {
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (!task) {
+      this.logger.warn(`Task with ID ${id} not found`);
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
+    return {
+      success: true,
+      data: task,
+      error: null,
+    };
+  }
+
+  async createTask(task: CreateTaskDto): Promise<ApiResponse<PublicTaskDto>> {
     try {
-      await this.prisma.task.create({
+      const newTask = await this.prisma.task.create({
         data: {
           title: task.title,
           description: task.description,
           status: task.status,
         },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
-
-      return true;
+      return {
+        success: true,
+        data: newTask,
+        error: null,
+      };
     } catch (error) {
-      console.error('Error creating task:', error);
-      return false; // Return false if task creation fails
+      this.logger.error(`Error creating task: ${error}`, error);
+      throw new BadRequestException('Failed to create task');
     }
   }
 
-  async updateTask(id: string, updatedTask: UpdateTaskDto): Promise<boolean> {
-    const taskIndex = await this.prisma.task.update({
-      where: { id },
-      data: {
-        title: updatedTask.title,
-        description: updatedTask.description,
-        status: updatedTask.status,
-      },
-    });
-
-    if (!taskIndex) {
-      return false;
+  async updateTask(
+    id: string,
+    updatedTask: UpdateTaskDto,
+  ): Promise<ApiResponse<PublicTaskDto>> {
+    try {
+      const task = await this.prisma.task.update({
+        where: { id },
+        data: {
+          title: updatedTask.title,
+          description: updatedTask.description,
+          status: updatedTask.status,
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+      return {
+        success: true,
+        data: task,
+        error: null,
+      };
+    } catch (error) {
+      if (error) {
+        // Prisma error code for record not found
+        this.logger.warn(`Task with ID ${id} not found`);
+        throw new NotFoundException(`Task with ID ${id} not found`);
+      }
+      this.logger.error(`Error updating task: ${error}`, error);
+      throw new BadRequestException('Failed to update task');
     }
+  }
 
-    return true;
+  async deleteTask(id: string): Promise<ApiResponse<PublicTaskDto>> {
+    try {
+      const data = await this.prisma.task.delete({
+        where: { id },
+      });
+
+      return {
+        success: true,
+        data: data,
+        error: null,
+      };
+    } catch (error) {
+      this.logger.error(`Error deleting task with ID ${id}: ${error}`, error);
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
   }
 }
