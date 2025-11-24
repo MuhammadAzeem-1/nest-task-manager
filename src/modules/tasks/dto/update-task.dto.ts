@@ -1,23 +1,16 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { TaskStatus } from '../enums/task-status.enum';
 
 export class UpdateTaskDto {
-  success: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @IsString()
-  title: string;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  @IsString()
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @IsOptional()
-  description: string;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  @IsString()
-  status: 'COMPLETED' | 'IN_PROGRESS' | 'CANCELLED';
-  // Add other properties as needed
-}
+  title?: string;
 
-export class RetrunUpdateTaskDto {
-  title: string;
-  status: 'COMPLETED' | 'IN_PROGRESS' | 'CANCELLED';
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsEnum(TaskStatus)
+  @IsOptional()
+  status?: TaskStatus;
 }
