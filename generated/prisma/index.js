@@ -183,11 +183,12 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:password123@localhost:5432/Task_manager?schema=public"
+        "value": null
       }
     }
   },
