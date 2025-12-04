@@ -63,7 +63,10 @@ export class TasksService {
     }
   }
 
-  async getTaskById(id: string, user: any): Promise<ApiResponse<PublicTaskDto>> {
+  async getTaskById(
+    id: string,
+    user: any,
+  ): Promise<ApiResponse<PublicTaskDto>> {
     try {
       const task = await this.prisma.task.findUnique({
         where: { id },
@@ -88,7 +91,9 @@ export class TasksService {
         this.logger.warn(
           `User ${user.email} attempted to access task ${id} without permission`,
         );
-        throw new ForbiddenException('You do not have permission to view this task');
+        throw new ForbiddenException(
+          'You do not have permission to view this task',
+        );
       }
 
       this.logger.log(`User ${user.email} retrieved task with ID: ${id}`);
@@ -131,9 +136,7 @@ export class TasksService {
         },
       });
 
-      this.logger.log(
-        `User ${user.email} created task with ID: ${newTask.id}`,
-      );
+      this.logger.log(`User ${user.email} created task with ID: ${newTask.id}`);
 
       return {
         success: true,
@@ -171,7 +174,9 @@ export class TasksService {
         this.logger.warn(
           `User ${user.email} attempted to update task ${id} without permission`,
         );
-        throw new ForbiddenException('You do not have permission to update this task');
+        throw new ForbiddenException(
+          'You do not have permission to update this task',
+        );
       }
 
       // Only update fields that are provided
@@ -232,7 +237,9 @@ export class TasksService {
         this.logger.warn(
           `User ${user.email} attempted to delete task ${id} without permission`,
         );
-        throw new ForbiddenException('You do not have permission to delete this task');
+        throw new ForbiddenException(
+          'You do not have permission to delete this task',
+        );
       }
 
       const data = await this.prisma.task.delete({

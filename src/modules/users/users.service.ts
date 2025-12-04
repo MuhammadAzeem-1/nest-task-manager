@@ -10,7 +10,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiResponse } from 'src/config/types';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { PrismaException } from 'src/common/exceptions/prisma.exception';
+// import { PrismaException } from 'src/common/exceptions/prisma.exception';
 import { UserRole } from './enums/user-role.enum';
 import { StorageService } from '../storage/storage.service';
 import * as bcrypt from 'bcrypt';
@@ -54,7 +54,7 @@ export class UsersService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new PrismaException(error);
+        // throw new PrismaException(error);
       }
       this.logger.error(`Error fetching users: ${error}`, error);
       throw error;
@@ -109,7 +109,7 @@ export class UsersService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new PrismaException(error);
+        // throw new PrismaException(error);
       }
       this.logger.error(`Error fetching user by ID: ${error}`, error);
       throw error;
@@ -161,7 +161,7 @@ export class UsersService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new PrismaException(error);
+        // throw new PrismaException(error);
       }
       this.logger.error(`Error creating user: ${error}`, error);
       throw error;
@@ -266,7 +266,7 @@ export class UsersService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new PrismaException(error);
+        // throw new PrismaException(error);
       }
 
       this.logger.error(`Error updating user: ${error}`, error);
@@ -309,7 +309,7 @@ export class UsersService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new PrismaException(error);
+        // throw new PrismaException(error);
       }
       this.logger.error(`Error deleting user with ID ${id}: ${error}`, error);
       throw error;
@@ -394,7 +394,7 @@ export class UsersService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new PrismaException(error);
+        // throw new PrismaException(error);
       }
       this.logger.error(`Error uploading profile picture: ${error}`, error);
       throw error;
