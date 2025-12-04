@@ -5,4 +5,3 @@ export enum UserRole {
 }
 
 export const USER_ROLE_VALUES = Object.values(UserRole);
-

@@ -17,8 +17,6 @@ import { JwtService } from '@nestjs/jwt';
  */
 describe('AuthService', () => {
   let service: AuthService;
-  let prismaService: PrismaService;
-  let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -47,8 +45,8 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    prismaService = module.get<PrismaService>(PrismaService);
-    jwtService = module.get<JwtService>(JwtService);
+    // prismaService = module.get<PrismaService>(PrismaService);
+    // jwtService = module.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {

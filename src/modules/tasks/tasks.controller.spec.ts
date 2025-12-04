@@ -128,7 +128,9 @@ describe('TasksController', () => {
        * mockResolvedValue() makes the async function return a resolved promise
        * This simulates a successful service call
        */
-      jest.spyOn(service, 'getAllTasks').mockResolvedValue(mockResponse);
+      const getAllTasksSpy = jest
+        .spyOn(service, 'getAllTasks')
+        .mockResolvedValue(mockResponse);
 
       // Act: Execute the method we're testing
       // This is the "When" part
@@ -138,8 +140,8 @@ describe('TasksController', () => {
       // This is the "Then" part
 
       // Check that the service method was called with correct parameters
-      // Note: We assert on the spy (service.getAllTasks), not the result of calling it
-      expect(service.getAllTasks).toHaveBeenCalledWith(mockUser);
+      // Note: We assert on the spy, not the result of calling it
+      expect(getAllTasksSpy).toHaveBeenCalledWith(mockUser);
 
       // Check that the result matches what we expected
       expect(result).toEqual(mockResponse);
@@ -174,12 +176,14 @@ describe('TasksController', () => {
         message: 'Retrieved 1 tasks',
       };
 
-      jest.spyOn(service, 'getAllTasks').mockResolvedValue(mockResponse);
+      const getAllTasksSpy = jest
+        .spyOn(service, 'getAllTasks')
+        .mockResolvedValue(mockResponse);
 
       const result = await controller.getAllTasks(mockAdmin);
 
       // Assert on the spy, not the result of calling the method
-      expect(service.getAllTasks).toHaveBeenCalledWith(mockAdmin);
+      expect(getAllTasksSpy).toHaveBeenCalledWith(mockAdmin);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -211,15 +215,17 @@ describe('TasksController', () => {
         message: 'Task retrieved successfully',
       };
 
-      jest.spyOn(service, 'getTaskById').mockResolvedValue(mockResponse);
+      const getTaskByIdSpy = jest
+        .spyOn(service, 'getTaskById')
+        .mockResolvedValue(mockResponse);
 
       // Act
       const result = await controller.getTaskById(taskId, mockUser);
 
       // Assert
       // toHaveBeenCalledWith() verifies the method was called with specific arguments
-      // Assert on the spy (service.getTaskById), not the result of calling it
-      expect(service.getTaskById).toHaveBeenCalledWith(taskId, mockUser);
+      // Assert on the spy, not the result of calling it
+      expect(getTaskByIdSpy).toHaveBeenCalledWith(taskId, mockUser);
       expect(result).toEqual(mockResponse);
       expect(result?.data?.id).toBe(taskId);
     });
@@ -257,14 +263,16 @@ describe('TasksController', () => {
         message: 'Task created successfully',
       };
 
-      jest.spyOn(service, 'createTask').mockResolvedValue(mockResponse);
+      const createTaskSpy = jest
+        .spyOn(service, 'createTask')
+        .mockResolvedValue(mockResponse);
 
       // Act
       const result = await controller.createTask(createTaskDto, mockUser);
 
       // Assert
       // Assert on the spy, not the result of calling the method
-      expect(service.createTask).toHaveBeenCalledWith(createTaskDto, mockUser);
+      expect(createTaskSpy).toHaveBeenCalledWith(createTaskDto, mockUser);
       expect(result).toEqual(mockResponse);
       expect(result?.data?.title).toBe('New Task');
       expect(result?.data?.userId).toBe('user-123');
@@ -303,7 +311,9 @@ describe('TasksController', () => {
         message: 'Task updated successfully',
       };
 
-      jest.spyOn(service, 'updateTask').mockResolvedValue(mockResponse);
+      const updateTaskSpy = jest
+        .spyOn(service, 'updateTask')
+        .mockResolvedValue(mockResponse);
 
       // Act
       const result = await controller.updateTask(
@@ -314,7 +324,7 @@ describe('TasksController', () => {
 
       // Assert
       // Assert on the spy, not the result of calling the method
-      expect(service.updateTask).toHaveBeenCalledWith(
+      expect(updateTaskSpy).toHaveBeenCalledWith(
         taskId,
         updateTaskDto,
         mockUser,
@@ -351,14 +361,16 @@ describe('TasksController', () => {
         message: 'Task deleted successfully',
       };
 
-      jest.spyOn(service, 'deleteTask').mockResolvedValue(mockResponse);
+      const deleteTaskSpy = jest
+        .spyOn(service, 'deleteTask')
+        .mockResolvedValue(mockResponse);
 
       // Act
       const result = await controller.deleteTask(taskId, mockUser);
 
       // Assert
       // Assert on the spy, not the result of calling the method
-      expect(service.deleteTask).toHaveBeenCalledWith(taskId, mockUser);
+      expect(deleteTaskSpy).toHaveBeenCalledWith(taskId, mockUser);
       expect(result).toEqual(mockResponse);
       expect(result?.data?.id).toBe(taskId);
     });

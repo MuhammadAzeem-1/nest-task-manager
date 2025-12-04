@@ -17,8 +17,6 @@ import { StorageService } from '../storage/storage.service';
  */
 describe('UsersService', () => {
   let service: UsersService;
-  let prismaService: PrismaService;
-  let storageService: StorageService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,8 +49,6 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    prismaService = module.get<PrismaService>(PrismaService);
-    storageService = module.get<StorageService>(StorageService);
   });
 
   it('should be defined', () => {

@@ -95,7 +95,7 @@ export class UsersService {
         this.logger.warn(`User with ID ${id} not found`);
         throw new NotFoundException(`User with ID ${id} not found`);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       this.logger.log(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         `User ${currentUser.email} retrieved user with ID: ${id}`,

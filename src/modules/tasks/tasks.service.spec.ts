@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
-import { CreateTaskDto, PublicTaskDto } from './dto/create-task.dto';
+import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskStatus } from './enums/task-status.enum';
 import { UserRole } from '../users/enums/user-role.enum';
+import { PublicUserDto } from '../users/dto/create-user.dto';
 
 /**
  * Unit Tests for TasksService
@@ -71,10 +72,13 @@ describe('TasksService', () => {
   describe('getAllTasks', () => {
     it('should return all tasks for a regular user (only their own tasks)', async () => {
       // Arrange: Set up test data
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       // Mock tasks that belong to this user
@@ -106,7 +110,7 @@ describe('TasksService', () => {
        */
       const findManySpy = jest
         .spyOn(prismaService.task, 'findMany')
-        .mockResolvedValue(mockTasks as any);
+        .mockResolvedValue(mockTasks as never);
 
       // Act: Call the service method
       const result = await service.getAllTasks(mockUser);
@@ -140,10 +144,13 @@ describe('TasksService', () => {
 
     it('should return all tasks for an admin user (all tasks)', async () => {
       // Arrange
-      const mockAdmin = {
+      const mockAdmin: PublicUserDto = {
         id: 'admin-123',
+        name: 'Admin User',
         email: 'admin@example.com',
         role: UserRole.ADMIN,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const mockTasks = [
@@ -169,7 +176,7 @@ describe('TasksService', () => {
 
       const findManySpy = jest
         .spyOn(prismaService.task, 'findMany')
-        .mockResolvedValue(mockTasks as any);
+        .mockResolvedValue(mockTasks as never);
 
       // Act
       const result = await service.getAllTasks(mockAdmin);
@@ -198,10 +205,13 @@ describe('TasksService', () => {
 
     it('should return empty array when no tasks found', async () => {
       // Arrange
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       // Mock Prisma to return empty array
@@ -221,10 +231,13 @@ describe('TasksService', () => {
     it('should return a task when user owns it', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const mockTask = {
@@ -239,7 +252,7 @@ describe('TasksService', () => {
 
       const findUniqueSpy = jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(mockTask as any);
+        .mockResolvedValue(mockTask as never);
 
       // Act
       const result = await service.getTaskById(taskId, mockUser);
@@ -266,10 +279,13 @@ describe('TasksService', () => {
     it('should return a task when user is admin', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockAdmin = {
+      const mockAdmin: PublicUserDto = {
         id: 'admin-123',
+        name: 'Admin User',
         email: 'admin@example.com',
         role: UserRole.ADMIN,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const mockTask = {
@@ -284,7 +300,7 @@ describe('TasksService', () => {
 
       jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(mockTask as any);
+        .mockResolvedValue(mockTask as never);
 
       // Act
       const result = await service.getTaskById(taskId, mockAdmin);
@@ -297,10 +313,13 @@ describe('TasksService', () => {
     it('should throw NotFoundException when task does not exist', async () => {
       // Arrange
       const taskId = 'non-existent-task';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       // Mock Prisma to return null (task not found)
@@ -319,10 +338,13 @@ describe('TasksService', () => {
     it('should throw ForbiddenException when user tries to access another user task', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const mockTask = {
@@ -337,7 +359,7 @@ describe('TasksService', () => {
 
       jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(mockTask as any);
+        .mockResolvedValue(mockTask as never);
 
       // Act & Assert
       await expect(service.getTaskById(taskId, mockUser)).rejects.toThrow(
@@ -352,10 +374,13 @@ describe('TasksService', () => {
   describe('createTask', () => {
     it('should create a new task successfully', async () => {
       // Arrange
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const createTaskDto: CreateTaskDto = {
@@ -376,7 +401,7 @@ describe('TasksService', () => {
 
       const createSpy = jest
         .spyOn(prismaService.task, 'create')
-        .mockResolvedValue(createdTask as any);
+        .mockResolvedValue(createdTask as never);
 
       // Act
       const result = await service.createTask(createTaskDto, mockUser);
@@ -408,10 +433,13 @@ describe('TasksService', () => {
 
     it('should create task with default status when status not provided', async () => {
       // Arrange
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const createTaskDto: CreateTaskDto = {
@@ -431,7 +459,7 @@ describe('TasksService', () => {
 
       const createSpy = jest
         .spyOn(prismaService.task, 'create')
-        .mockResolvedValue(createdTask as any);
+        .mockResolvedValue(createdTask as never);
 
       // Act
       const result = await service.createTask(createTaskDto, mockUser);
@@ -464,10 +492,13 @@ describe('TasksService', () => {
     it('should update a task when user owns it', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updateTaskDto: UpdateTaskDto = {
@@ -498,12 +529,12 @@ describe('TasksService', () => {
       // Mock findUnique for existence check
       const findUniqueSpy = jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(existingTask as any);
+        .mockResolvedValue(existingTask as never);
 
       // Mock update for the actual update
       const updateSpy = jest
         .spyOn(prismaService.task, 'update')
-        .mockResolvedValue(updatedTask as any);
+        .mockResolvedValue(updatedTask as never);
 
       // Act
       const result = await service.updateTask(taskId, updateTaskDto, mockUser);
@@ -542,10 +573,13 @@ describe('TasksService', () => {
     it('should throw NotFoundException when task does not exist', async () => {
       // Arrange
       const taskId = 'non-existent-task';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updateTaskDto: UpdateTaskDto = {
@@ -563,10 +597,13 @@ describe('TasksService', () => {
     it('should throw ForbiddenException when user tries to update another user task', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updateTaskDto: UpdateTaskDto = {
@@ -585,7 +622,7 @@ describe('TasksService', () => {
 
       jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(existingTask as any);
+        .mockResolvedValue(existingTask as never);
 
       // Act & Assert
       await expect(
@@ -599,10 +636,13 @@ describe('TasksService', () => {
     it('should allow admin to update any task', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockAdmin = {
+      const mockAdmin: PublicUserDto = {
         id: 'admin-123',
+        name: 'Admin User',
         email: 'admin@example.com',
         role: UserRole.ADMIN,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updateTaskDto: UpdateTaskDto = {
@@ -626,10 +666,10 @@ describe('TasksService', () => {
 
       jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(existingTask as any);
+        .mockResolvedValue(existingTask as never);
       jest
         .spyOn(prismaService.task, 'update')
-        .mockResolvedValue(updatedTask as any);
+        .mockResolvedValue(updatedTask as never);
 
       // Act
       const result = await service.updateTask(taskId, updateTaskDto, mockAdmin);
@@ -642,10 +682,13 @@ describe('TasksService', () => {
     it('should only update provided fields (partial update)', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updateTaskDto: UpdateTaskDto = {
@@ -668,25 +711,23 @@ describe('TasksService', () => {
         description: 'Updated Description',
       };
 
-      const findUniqueSpy = jest
-        .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(existingTask as any);
       const updateSpy = jest
         .spyOn(prismaService.task, 'update')
-        .mockResolvedValue(updatedTask as any);
+        .mockResolvedValue(updatedTask as never);
 
       // Act
       const result = await service.updateTask(taskId, updateTaskDto, mockUser);
 
       // Assert
       // Should only include description in the update data
-      expect(updateSpy).toHaveBeenCalledWith({
-        where: { id: taskId },
-        data: {
-          description: 'Updated Description',
-        },
-        select: expect.any(Object),
-      });
+      expect(updateSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: taskId },
+          data: { description: 'Updated Description' },
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          select: expect.anything(),
+        }),
+      );
 
       expect(result.success).toBe(true);
     });
@@ -696,10 +737,13 @@ describe('TasksService', () => {
     it('should delete a task when user owns it', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const existingTask = {
@@ -716,10 +760,10 @@ describe('TasksService', () => {
 
       const findUniqueSpy = jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(existingTask as any);
+        .mockResolvedValue(existingTask as never);
       const deleteSpy = jest
         .spyOn(prismaService.task, 'delete')
-        .mockResolvedValue(deletedTask as any);
+        .mockResolvedValue(deletedTask as never);
 
       // Act
       const result = await service.deleteTask(taskId, mockUser);
@@ -750,10 +794,13 @@ describe('TasksService', () => {
     it('should throw NotFoundException when task does not exist', async () => {
       // Arrange
       const taskId = 'non-existent-task';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       jest.spyOn(prismaService.task, 'findUnique').mockResolvedValue(null);
@@ -767,10 +814,13 @@ describe('TasksService', () => {
     it('should throw ForbiddenException when user tries to delete another user task', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockUser = {
+      const mockUser: PublicUserDto = {
         id: 'user-123',
+        name: 'Test User',
         email: 'user@example.com',
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const existingTask = {
@@ -785,7 +835,7 @@ describe('TasksService', () => {
 
       jest
         .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(existingTask as any);
+        .mockResolvedValue(existingTask as never);
 
       // Act & Assert
       await expect(service.deleteTask(taskId, mockUser)).rejects.toThrow(
@@ -799,10 +849,13 @@ describe('TasksService', () => {
     it('should allow admin to delete any task', async () => {
       // Arrange
       const taskId = 'task-123';
-      const mockAdmin = {
+      const mockAdmin: PublicUserDto = {
         id: 'admin-123',
+        name: 'Admin User',
         email: 'admin@example.com',
         role: UserRole.ADMIN,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const existingTask = {
@@ -815,12 +868,9 @@ describe('TasksService', () => {
         updatedAt: new Date(),
       };
 
-      const findUniqueSpy = jest
-        .spyOn(prismaService.task, 'findUnique')
-        .mockResolvedValue(existingTask as any);
       const deleteSpy = jest
         .spyOn(prismaService.task, 'delete')
-        .mockResolvedValue(existingTask as any);
+        .mockResolvedValue(existingTask as never);
 
       // Act
       const result = await service.deleteTask(taskId, mockAdmin);

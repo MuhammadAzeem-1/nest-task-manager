@@ -12,6 +12,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaException } from 'src/common/exceptions/prisma.exception';
 import { TaskStatus } from './enums/task-status.enum';
 import { UserRole } from '../users/enums/user-role.enum';
+import { PublicUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class TasksService {
@@ -19,7 +20,9 @@ export class TasksService {
 
   constructor(private prisma: PrismaService) {}
 
-  async getAllTasks(user: any): Promise<ApiResponse<PublicTaskDto[]>> {
+  async getAllTasks(
+    user: PublicUserDto,
+  ): Promise<ApiResponse<PublicTaskDto[]>> {
     try {
       // Admin can see all tasks, regular users only their own
       const whereClause =
@@ -65,7 +68,7 @@ export class TasksService {
 
   async getTaskById(
     id: string,
-    user: any,
+    user: PublicUserDto,
   ): Promise<ApiResponse<PublicTaskDto>> {
     try {
       const task = await this.prisma.task.findUnique({
@@ -115,7 +118,7 @@ export class TasksService {
 
   async createTask(
     task: CreateTaskDto,
-    user: any,
+    user: PublicUserDto,
   ): Promise<ApiResponse<PublicTaskDto>> {
     try {
       const newTask = await this.prisma.task.create({
@@ -136,8 +139,6 @@ export class TasksService {
         },
       });
 
-      this.logger.log(`User ${user.email} created task with ID: ${newTask.id}`);
-
       return {
         success: true,
         data: newTask as PublicTaskDto,
@@ -156,7 +157,7 @@ export class TasksService {
   async updateTask(
     id: string,
     updatedTask: UpdateTaskDto,
-    user: any,
+    user: PublicUserDto,
   ): Promise<ApiResponse<PublicTaskDto>> {
     try {
       // Check if task exists
@@ -171,9 +172,6 @@ export class TasksService {
 
       // Check if user has permission to update this task
       if (user.role !== UserRole.ADMIN && existingTask.userId !== user.id) {
-        this.logger.warn(
-          `User ${user.email} attempted to update task ${id} without permission`,
-        );
         throw new ForbiddenException(
           'You do not have permission to update this task',
         );
@@ -202,7 +200,7 @@ export class TasksService {
         },
       });
 
-      this.logger.log(`User ${user.email} updated task with ID ${id}`);
+      this.logger.log(`User ${user.email} updated task with ID: ${id}`);
 
       return {
         success: true,
@@ -220,7 +218,10 @@ export class TasksService {
     }
   }
 
-  async deleteTask(id: string, user: any): Promise<ApiResponse<PublicTaskDto>> {
+  async deleteTask(
+    id: string,
+    user: PublicUserDto,
+  ): Promise<ApiResponse<PublicTaskDto>> {
     try {
       // Check if task exists
       const existingTask = await this.prisma.task.findUnique({
@@ -255,7 +256,7 @@ export class TasksService {
         },
       });
 
-      this.logger.log(`User ${user.email} deleted task with ID ${id}`);
+      this.logger.log(`User ${user.email} deleted task with ID: ${id}`);
 
       return {
         success: true,

@@ -4,10 +4,10 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   // Enable CORS for testing with Postman and other clients
   app.enableCors();
-  
+
   // Configure global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -19,7 +19,7 @@ async function bootstrap() {
       },
     }),
   );
-  
+
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
   console.log(`🚀 Application is running on: http://localhost:${port}`);

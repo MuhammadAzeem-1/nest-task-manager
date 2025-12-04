@@ -23,7 +23,8 @@ export class StorageService {
       'AWS_SECRET_ACCESS_KEY',
     );
     const region = this.configService.get<string>('AWS_REGION');
-    this.bucketName = this.configService.get<string>('AWS_S3_BUCKET_NAME') ?? null;
+    this.bucketName =
+      this.configService.get<string>('AWS_S3_BUCKET_NAME') ?? null;
 
     // Check if all required credentials are present
     if (accessKeyId && secretAccessKey && region && this.bucketName) {
@@ -83,9 +84,7 @@ export class StorageService {
       return url;
     } catch (error) {
       this.logger.error(`Error uploading file to S3: ${error}`);
-      throw new BadRequestException(
-        'Failed to upload file. Please try again.',
-      );
+      throw new BadRequestException('Failed to upload file. Please try again.');
     }
   }
 
@@ -124,4 +123,3 @@ export class StorageService {
     return this.isConfigured;
   }
 }
-
