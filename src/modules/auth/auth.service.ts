@@ -20,6 +20,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
+  // Signup
 
   async signup(dto: SignupDto): Promise<ApiResponse<any>> {
     try {
@@ -54,7 +55,7 @@ export class AuthService {
         },
       });
 
-      // Generate JWT token
+      // Generate JWT token for the user
       const token = this.generateToken(user.id, user.email, user.role);
 
       this.logger.log(`User registered successfully: ${user.email}`);
