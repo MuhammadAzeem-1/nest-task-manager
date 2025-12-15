@@ -130,7 +130,7 @@ jobs:
             
             # Restart your application process (e.g., using PM2, systemd, or bare node)
             # Adjust the command based on how you manage your running application!
-            source .env
+          
             # Example using PM2:
             pm2 restart nest-app --update-env
             
