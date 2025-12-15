@@ -85,6 +85,55 @@ jobs:
 
 
             # Unit Tests
+
+
+  # Deploy Application to EC2
+  deploy:
+    name: Deploy to AWS EC2
+    runs-on: ubuntu-latest
+    # This job only runs if all previous checks pass and only on the 'main' branch
+    if: success() && github.ref == 'refs/heads/main'
+    needs: [quality-check]
+    environment: production # Optional: Use an environment for protection/variables
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 1. Prepare SSH Key and known_hosts
+      # This step sets up the SSH agent with your private key for the action below
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3 # A highly-rated action for SSH deployment
+        with:
+          # --- Configuration from GitHub Secrets ---
+          host: ${{ secrets.EC2_HOST }}             # EC2 Public IP or DNS
+          username: ${{ secrets.EC2_USER }}         # e.g., 'ubuntu', 'ec2-user'
+          key: ${{ secrets.SSH_PRIVATE_KEY }}       # The private key for deployment
+          port: 22                                  # Default SSH port
+          
+          # --- Commands to run on your EC2 instance ---
+          script: |
+            echo "--- Starting Deployment on EC2 ---"
+            set -e 
+            # Navigate to your application directory
+            cd nest-task-manager
+            
+            # Fetch the latest changes from the main branch
+            git fetch origin
+            git reset --hard origin/main
+            
+            # Install any new dependencies
+            npm ci
+            
+            # Rebuild the application (since the source code changed)
+            npm run build
+            
+            # Restart your application process (e.g., using PM2, systemd, or bare node)
+            # Adjust the command based on how you manage your running application!
+            # Example using PM2:
+            pm2 restart nest-app --update-env
+            
+            echo "--- Deployment Complete! ---"     
   # unit-tests:
   #   name: Unit Tests
   #   runs-on: ubuntu-latest
